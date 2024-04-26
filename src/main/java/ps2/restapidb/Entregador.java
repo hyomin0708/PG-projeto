@@ -1,4 +1,4 @@
-package com.example.demo;
+package ps2.restapidb;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,7 +16,6 @@ public class Entregador {
     private int pontuacao;
     private boolean situacaoEntrega;
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }

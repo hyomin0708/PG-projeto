@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entregador Management</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Entregador Management</h2>
+    
+    <h3>Add New Entregador:</h3>
+    <form id="addEntregadorForm">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required><br><br>
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" required><br><br>
+        <label for="pontuacao">Pontuação:</label>
+        <input type="number" id="pontuacao" name="pontuacao" required><br><br>
+        <label for="situacaoEntrega">Situação de Entrega:</label>
+        <input type="checkbox" id="situacaoEntrega" name="situacaoEntrega"><br><br>
+        <button type="submit">Add Entregador</button>
+    </form>
+    
+    <h3>List of Entregadores:</h3>
+    <table id="entregadoresTable">
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Pontuação</th>
+            <th>Situação de Entrega</th>
+        </tr>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchEntregadores();
+            document.getElementById('addEntregadorForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                addEntregador();
+            });
+        });
+
+        function fetchEntregadores() {
+            fetch('/entregadores')
+            .then(response => response.json())
+            .then(data => {
+                const entregadoresTable = document.getElementById('entregadoresTable');
+                entregadoresTable.innerHTML = '<tr><th>ID</th><th>Nome</th><th>Telefone</th><th>Pontuação</th><th>Situação de Entrega</th></tr>';
+                data.forEach(entregador => {
+                    const row = `<tr>
+                                    <td>${entregador.id}</td>
+                                    <td>${entregador.nome}</td>
+                                    <td>${entregador.telefone}</td>
+                                    <td>${entregador.pontuacao}</td>
+                                    <td>${entregador.situacaoEntrega ? 'Entrega Disponível' : 'Entrega Indisponível'}</td>
+                                </tr>`;
+                    entregadoresTable.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Error fetching entregadores:', error));
+        }
+
+        function addEntregador() {
+            const nome = document.getElementById('nome').value;
+            const telefone = document.getElementById('telefone').value;
+            const pontuacao = document.getElementById('pontuacao').value;
+            const situacaoEntrega = document.getElementById('situacaoEntrega').checked;
+
+            const data = {
+                nome: nome,
+                telefone: telefone,
+                pontuacao: pontuacao,
+                situacaoEntrega: situacaoEntrega
+            };
+
+            fetch('/entregadores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    fetchEntregadores();
+                } else {
+                    console.error('Failed to add entregador');
+                }
+            })
+            .catch(error => console.error('Error adding entregador:', error));
+        }
+    </script>
+</body>
+</html>
