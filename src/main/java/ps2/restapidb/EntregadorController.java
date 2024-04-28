@@ -15,12 +15,13 @@ public class EntregadorController {
 
     @GetMapping
     public Iterable<Entregador> getAllEntregadores() {
-        return EntregadorRepo.findAll();
+        return entregadorRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Entregador> getEntregadorById(@PathVariable("id") long id) {
-        Optional<Entregador> entregadorOptional = entregadorRepository.findById(id);
+
+    @GetMapping("/{cod_entregador}")
+    public ResponseEntity<Entregador> getEntregadorById(@PathVariable("cod_entregador") long cod_entregador) {
+        Optional<Entregador> entregadorOptional = entregadorRepository.findById(cod_entregador);
         return entregadorOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -30,9 +31,9 @@ public class EntregadorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEntregador);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Entregador> updateEntregador(@PathVariable("id") long id, @RequestBody Entregador updatedEntregador) {
-        Optional<Entregador> existingEntregadorOptional = entregadorRepository.findById(id);
+    @PutMapping("/{cod_entregador}")
+    public ResponseEntity<Entregador> updateEntregador(@PathVariable("cod_entregador") long cod_entregador, @RequestBody Entregador updatedEntregador) {
+        Optional<Entregador> existingEntregadorOptional = entregadorRepository.findById(cod_entregador);
         if (existingEntregadorOptional.isPresent()) {
             Entregador existingEntregador = existingEntregadorOptional.get();
             existingEntregador.setNome(updatedEntregador.getNome());
@@ -46,10 +47,10 @@ public class EntregadorController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEntregador(@PathVariable("id") long id) {
-        if (entregadorRepository.existsById(id)) {
-            entregadorRepository.deleteById(id);
+    @DeleteMapping("/{cod_entregador}")
+    public ResponseEntity<Void> deleteEntregador(@PathVariable("cod_entregador") long cod_entregador) {
+        if (entregadorRepository.existsById(cod_entregador)) {
+            entregadorRepository.deleteById(cod_entregador);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();

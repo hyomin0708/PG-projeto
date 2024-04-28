@@ -9,19 +9,19 @@ import javax.persistence.Id;
 public class Entregador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long cod_entregador; // Changed from cod_entragador to cod_entregador
 
     private String nome;
     private String telefone;
     private int pontuacao;
     private boolean situacaoEntrega;
 
-    public Long getId() {
-        return id;
+    public Long getCod_entregador() { // Changed from getCod() to getCod_entregador()
+        return cod_entregador;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCod_entregador(Long cod_entregador) { // Changed from setcod() to setCod_entregador()
+        this.cod_entregador = cod_entregador;
     }
 
     public String getNome() {
@@ -48,7 +48,7 @@ public class Entregador {
         this.pontuacao = pontuacao;
     }
 
-    public boolean getSituacaoEntrega() {
+    public boolean isSituacaoEntrega() { // Changed from getSituacaoEntrega() to isSituacaoEntrega()
         return situacaoEntrega;
     }
 
