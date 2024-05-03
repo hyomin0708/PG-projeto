@@ -1,59 +1,55 @@
 package ps2.restapidb;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class EntregadorController {
 
     @Autowired
-    private EntregadorRepo entregadorRepository;
+    private EntregadorRepo entregadorRepo;
 
-    @GetMapping
-    public Iterable<Entregador> getAllEntregadores() {
-        return entregadorRepository.findAll();
+    @GetMapping("/api/entregadores")
+    Iterable<Entregador> getEntregadores() {
+        return entregadorRepo.findAll();
     }
 
-
-    @GetMapping("/{cod_entregador}")
-    public ResponseEntity<Entregador> getEntregadorById(@PathVariable("cod_entregador") long cod_entregador) {
-        Optional<Entregador> entregadorOptional = entregadorRepository.findById(cod_entregador);
-        return entregadorOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/api/entregadores/{id}")
+    Optional<Entregador> getEntregador(@PathVariable long id) {
+        return entregadorRepo.findById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<Entregador> createEntregador(@RequestBody Entregador entregador) {
-        Entregador savedEntregador = entregadorRepository.save(entregador);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedEntregador);
+    @PostMapping("/api/entregadores")
+    Entregador createEntregador(@RequestBody Entregador e) {
+        Entregador createdEntregador = entregadorRepo.save(e);
+        return createdEntregador;
     }
 
-    @PutMapping("/{cod_entregador}")
-    public ResponseEntity<Entregador> updateEntregador(@PathVariable("cod_entregador") long cod_entregador, @RequestBody Entregador updatedEntregador) {
-        Optional<Entregador> existingEntregadorOptional = entregadorRepository.findById(cod_entregador);
-        if (existingEntregadorOptional.isPresent()) {
-            Entregador existingEntregador = existingEntregadorOptional.get();
-            existingEntregador.setNome(updatedEntregador.getNome());
-            existingEntregador.setTelefone(updatedEntregador.getTelefone());
-            existingEntregador.setPontuacao(updatedEntregador.getPontuacao());
-            existingEntregador.setSituacaoEntrega(updatedEntregador.getSituacaoEntrega());
-            entregadorRepository.save(existingEntregador);
-            return ResponseEntity.ok(existingEntregador);
-        } else {
-            return ResponseEntity.notFound().build();
+    @PutMapping("/api/entregadores/{entregadorId}")
+    Optional<Entregador> updateEntregador(@RequestBody Entregador entregadorReq, @PathVariable long entregadorId) {
+        Optional<Entregador> opt = entregadorRepo.findById(entregadorId);
+        if (opt.isPresent()) {
+            if (entregadorReq.getCod_entregador() == entregadorId) {
+                entregadorRepo.save(entregadorReq);
+                return opt;
+            }
         }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Erro ao alterar dados do entregador com id " + entregadorId);
     }
 
-    @DeleteMapping("/{cod_entregador}")
-    public ResponseEntity<Void> deleteEntregador(@PathVariable("cod_entregador") long cod_entregador) {
-        if (entregadorRepository.existsById(cod_entregador)) {
-            entregadorRepository.deleteById(cod_entregador);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @DeleteMapping("/api/entregadores/{id}")
+    void deleteEntregador(@PathVariable long id) {
+        entregadorRepo.deleteById(id);
     }
+
 }
