@@ -10,7 +10,7 @@
     <h1>Gerenciamento de Entregadores</h1>
 
     <table>    
-        <tr> <td>ID:</td> <td><input type="text" id="txtId"></td> </tr>
+        <tr> <td>ID:</td> <td><input type="text" id="txtId" ></td> </tr>
         <tr> <td>Nome:</td> <td><input type="text" id="txtNome"></td> </tr>
         <tr> <td>Situação de entrega:</td> <td><input type="text" id="txtSituacao"></td> </tr>
         <tr> <td>Pontuação:</td> <td><input type="text" id="txtPontuacao"></td> </tr>
@@ -78,7 +78,6 @@
               .catch(function(error) { paragrafoMensagem.innerHTML = "Erro ao listar entregadores (código " + error.message + ")";});
         }
 
-
         function preencherTabela(entregadores) {
             var linhasTabela = '';
             var n = entregadores.length;
@@ -98,11 +97,11 @@
         function selecionarEntregador(id, nome, situacao, pontuacao, telefone) {
             criandoNovoEntregador = false;
             paragrafoMensagem.innerHTML = 'Altere e salve os dados do entregador, ou então apague o registro do entregador.'
-            txtId.value = id;
-            txtNome.value = nome;
-            txtSituacao.value = situacao;
-            txtPontuacao.value = pontuacao;
-            txtTelefone.value = telefone;
+            txtId.value = id || '';
+            txtNome.value = nome || '';
+            txtSituacao.value = situacao || '';
+            txtPontuacao.value = pontuacao || '';
+            txtTelefone.value = telefone || '';
 
             txtId.disabled = true;
             txtNome.disabled = false;
@@ -120,7 +119,7 @@
             paragrafoMensagem.innerHTML = 'Preencha os dados do novo entregador...';
             criandoNovoEntregador = true;
             
-            txtId.value = '';
+            txtId.value = ''; // Definindo como string vazia, não undefined
             txtNome.value = '';
             txtSituacao.value = '';
             txtPontuacao.value = '';

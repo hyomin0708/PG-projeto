@@ -1,26 +1,28 @@
 package ps2.restapidb;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Entregador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cod_entregador; // Changed from cod_entragador to cod_entregador
+    private Long cod_entregador;
 
     private String nome;
     private String telefone;
     private int pontuacao;
     private boolean situacaoEntrega;
 
-    public Long getCod_entregador() { // Changed from getCod() to getCod_entregador()
+    @ManyToMany(mappedBy = "entregadores")
+    private Set<Restaurante> restaurantes = new HashSet<>();
+
+    public Long getCod_entregador() { 
         return cod_entregador;
     }
 
-    public void setCod_entregador(Long cod_entregador) { // Changed from setcod() to setCod_entregador()
+    public void setCod_entregador(Long cod_entregador) { 
         this.cod_entregador = cod_entregador;
     }
 
@@ -55,4 +57,9 @@ public class Entregador {
     public void setSituacaoEntrega(boolean situacaoEntrega) {
         this.situacaoEntrega = situacaoEntrega;
     }
+
+    public Set<Restaurante> getRestaurantes() {
+        return restaurantes;
+    }
+    
 }

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relacionamento Restaurante-Entregador</title>
+    <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css">
+</head>
+<body>
+    <h1>Relacionamento Restaurante-Entregador</h1>
+    
+    <form id="relacionamentoForm">
+        
+        <label for="entregador">Entregador:</label>
+        <select id="entregador">
+            <!-- Opções de entregadores serão preenchidas dinamicamente -->
+        </select><br><br>
+    </form>
+    
+    <div id="mensagem"></div>
+
+    <script>
+        fetch('/api/restaurantes')
+            .then(response => response.json())
+            .then(data => {
+                var selectRestaurante = document.getElementById('restaurante');
+                data.forEach(restaurante => {
+                    var option = document.createElement('option');
+                    option.value = restaurante.id;
+                    option.textContent = restaurante.nome;
+                    selectRestaurante.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Erro ao obter restaurantes:', error));
+        
+        fetch('/api/entregadores')
+            .then(response => response.json())
+            .then(data => {
+                var selectEntregador = document.getElementById('entregador');
+                data.forEach(entregador => {
+                    var option = document.createElement('option');
+                    option.value = entregador.id;
+                    option.textContent = entregador.nome;
+                    selectEntregador.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Erro ao obter entregadores:', error));
+    </script>
+</body>
+</html>
