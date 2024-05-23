@@ -1,49 +1,180 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
+
 <head>
+    <title>Gerenciamento de Restaurantes</title>
     <meta charset="UTF-8">
-    <title>Relacionamento Restaurante-Entregador</title>
-    <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css">
+    <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
 </head>
+
 <body>
-    <h1>Relacionamento Restaurante-Entregador</h1>
-    
-    <form id="relacionamentoForm">
-        
-        <label for="entregador">Entregador:</label>
-        <select id="entregador">
-            <!-- Opções de entregadores serão preenchidas dinamicamente -->
-        </select><br><br>
-    </form>
-    
-    <div id="mensagem"></div>
+    <h1>Gerenciamento de Restaurantes</h1>
+
+    <table>
+        <tr> <td>ID:</td> <td><input type="text" id="txtId" disabled></td> </tr>
+        <tr> <td>Nome:</td> <td><input type="text" id="txtNome" disabled></td> </tr>
+        <tr> <td>Endereço:</td> <td><input type="text" id="txtEndereco" disabled></td> </tr>
+        <tr> <td>Telefone:</td> <td><input type="text" id="txtTelefone" disabled></td> </tr>
+        <tr> <td>Delivery Disponível:</td> <td><input type="checkbox" id="chkDeliveryDisponivel" disabled></td> </tr>
+        <tr><td></td><td>
+            <input type="button" value="Novo" onclick="novoRestaurante()" id="btnNovo">
+            <input type="button" value="Salvar" onclick="salvarRestaurante()" id="btnSalvar" disabled>
+            <input type="button" value="Apagar" onclick="apagarRestaurante()" id="btnApagar" disabled>
+            <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar" disabled>
+            <input type="button" value="Entregadores" onclick="window.location.href='https://fuzzy-engine-97j4r7xr65x2pp9-8080.app.github.dev/entregador.html'">
+        </td></tr>        
+    </table>
+
+    <p style="font-weight:bold" id="paragrafoMensagem"></p>
+
+    <table>
+        <tr> <th>ID</th> <th>Nome</th> <th>Endereço</th> <th>Telefone</th> <th>Delivery Disponível</th> </tr>
+        <tbody id="corpoTabelaRestaurantes"> </tbody>
+    </table>
 
     <script>
-        fetch('/api/restaurantes')
-            .then(response => response.json())
-            .then(data => {
-                var selectRestaurante = document.getElementById('restaurante');
-                data.forEach(restaurante => {
-                    var option = document.createElement('option');
-                    option.value = restaurante.id;
-                    option.textContent = restaurante.nome;
-                    selectRestaurante.appendChild(option);
-                });
+        class Restaurante {
+            constructor(id, nome, endereco, telefone, deliveryDisponivel) {
+                this.id = id;
+                this.nome = nome;
+                this.endereco = endereco;
+                this.telefone = telefone;
+                this.deliveryDisponivel = deliveryDisponivel;
+            }
+        }
+
+        const corpoTabela = document.querySelector('#corpoTabelaRestaurantes');
+        const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
+        const txtId = document.querySelector('#txtId');
+        const txtNome = document.querySelector('#txtNome');
+        const txtEndereco = document.querySelector('#txtEndereco');
+        const txtTelefone = document.querySelector('#txtTelefone');
+        const chkDeliveryDisponivel = document.querySelector('#chkDeliveryDisponivel');
+
+        const btnNovo = document.querySelector('#btnNovo');
+        const btnSalvar = document.querySelector('#btnSalvar');
+        const btnApagar = document.querySelector('#btnApagar');
+        const btnCancelar = document.querySelector('#btnCancelar');
+
+        function inicializar() {
+            paragrafoMensagem.innerHTML = 'Pressione o botão Novo ou selecione um restaurante da lista:';
+            txtId.value = '';
+            txtNome.value = '';
+            txtEndereco.value = '';
+            txtTelefone.value = '';
+            chkDeliveryDisponivel.checked = false;
+
+            txtNome.disabled = true;
+            txtEndereco.disabled = true;
+            txtTelefone.disabled = true;
+            chkDeliveryDisponivel.disabled = true;
+
+            btnNovo.disabled = false;
+            btnSalvar.disabled = true;
+            btnApagar.disabled = true;
+            btnCancelar.disabled = true;
+            listarTodosRestaurantes();
+        }
+
+        function listarTodosRestaurantes() {
+            const URL = `/api/restaurantes`;
+            fetch(URL)
+                .then(resposta => resposta.json())
+                .then(restaurantes => preencherTabela(restaurantes))
+                .catch(error => paragrafoMensagem.innerHTML = "Erro ao listar restaurantes: " + error);
+        }
+
+        function preencherTabela(restaurantes) {
+            corpoTabela.innerHTML = restaurantes.map(r =>
+                `<tr><td><a href="javascript:void(0)" onclick="selecionarRestaurante('${r.id}','${r.nome}','${r.endereco}','${r.telefone}','${r.deliveryDisponivel}')">${r.id}</a></td>` +
+                `<td>${r.nome}</td>` +
+                `<td>${r.endereco}</td>` +
+                `<td>${r.telefone}</td>` +
+                `<td>${r.deliveryDisponivel ? 'Sim' : 'Não'}</td></tr>`
+            ).join('');
+        }
+
+        function selecionarRestaurante(id, nome, endereco, telefone, deliveryDisponivel) {
+            txtId.value = id;
+            txtNome.value = nome;
+            txtEndereco.value = endereco;
+            txtTelefone.value = telefone;
+            chkDeliveryDisponivel.checked = deliveryDisponivel === 'true';
+
+            txtNome.disabled = false;
+            txtEndereco.disabled = false;
+            txtTelefone.disabled = false;
+            chkDeliveryDisponivel.disabled = false;
+
+            btnNovo.disabled = true;
+            btnSalvar.disabled = false;
+            btnApagar.disabled = false;
+            btnCancelar.disabled = false;
+            paragrafoMensagem.innerHTML = 'Altere e salve os dados do restaurante, ou então apague o registro do restaurante.';
+        }
+
+        function novoRestaurante() {
+            txtId.value = '';
+            txtNome.value = '';
+            txtEndereco.value = '';
+            txtTelefone.value = '';
+            chkDeliveryDisponivel.checked = false;
+
+            txtNome.disabled = false;
+            txtEndereco.disabled = false;
+            txtTelefone.disabled = false;
+            chkDeliveryDisponivel.disabled = false;
+
+            btnNovo.disabled = true;
+            btnSalvar.disabled = false;
+            btnApagar.disabled = true;
+            btnCancelar.disabled = false;
+            paragrafoMensagem.innerHTML = 'Preencha os dados do novo restaurante...';
+        }
+
+        function salvarRestaurante() {
+            const restaurante = new Restaurante(
+                txtId.value,
+                txtNome.value,
+                txtEndereco.value,
+                txtTelefone.value,
+                chkDeliveryDisponivel.checked
+            );
+
+            const URL = `/api/restaurantes` + (restaurante.id ? `/${restaurante.id}` : '');
+            const method = restaurante.id ? 'PUT' : 'POST';
+
+            fetch(URL, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(restaurante)
             })
-            .catch(error => console.error('Erro ao obter restaurantes:', error));
-        
-        fetch('/api/entregadores')
-            .then(response => response.json())
-            .then(data => {
-                var selectEntregador = document.getElementById('entregador');
-                data.forEach(entregador => {
-                    var option = document.createElement('option');
-                    option.value = entregador.id;
-                    option.textContent = entregador.nome;
-                    selectEntregador.appendChild(option);
-                });
+            .then(resposta => {
+                if (!resposta.ok) throw new Error('Falha ao salvar o restaurante: ' + resposta.statusText);
+                return resposta.json();
             })
-            .catch(error => console.error('Erro ao obter entregadores:', error));
+            .then(() => inicializar())
+            .catch(error => paragrafoMensagem.innerHTML = error.message);
+        }
+
+        function apagarRestaurante() {
+            const URL = `/api/restaurantes/${txtId.value}`;
+            fetch(URL, {
+                method: 'DELETE'
+            })
+            .then(resposta => {
+                if (!resposta.ok) throw new Error('Falha ao apagar o restaurante: ' + resposta.statusText);
+                inicializar();
+            })
+            .catch(error => paragrafoMensagem.innerHTML = error.message);
+        }
+
+        function cancelarEdicao() {
+            inicializar();
+        }
+
+        inicializar();
     </script>
 </body>
+
 </html>

@@ -1,6 +1,9 @@
-package ps2.restapidb;
+package ps2.Entregador;
 
 import javax.persistence.*;
+
+import ps2.Restaurante.Restaurante;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +18,7 @@ public class Entregador {
     private int pontuacao;
     private boolean situacaoEntrega;
 
-    @ManyToMany(mappedBy = "entregadores")
+    @OneToMany(mappedBy = "entregador")
     private Set<Restaurante> restaurantes = new HashSet<>();
 
     public Long getCod_entregador() { 

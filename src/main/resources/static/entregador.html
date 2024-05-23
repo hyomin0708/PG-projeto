@@ -11,23 +11,24 @@
     <h1>Gerenciamento de Entregadores</h1>
 
     <table>
-        <tr> <td>Código do Entregador:</td> <td><input type="text" id="txtCodEntregador" disabled></td> </tr>
+        <tr> <td>Código:</td> <td><input type="text" id="txtCodEntregador" disabled></td> </tr>
         <tr> <td>Nome:</td> <td><input type="text" id="txtNome" disabled></td> </tr>
         <tr> <td>Telefone:</td> <td><input type="text" id="txtTelefone" disabled></td> </tr>
-        <tr> <td>Situação de Entrega:</td> <td><input type="text" id="txtSituacaoEntrega" disabled></td> </tr>
+        <tr> <td>Entregado:</td> <td><input type="checkbox" id="chkSituacaoEntrega" disabled></td> </tr>
         <tr> <td>Pontuação:</td> <td><input type="text" id="txtPontuacao" disabled></td> </tr>
         <tr><td></td><td>
             <input type="button" value="Novo" onclick="novoEntregador()" id="btnNovo">
             <input type="button" value="Salvar" onclick="salvarEntregador()" id="btnSalvar" disabled>
             <input type="button" value="Apagar" onclick="apagarEntregador()" id="btnApagar" disabled>
             <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar" disabled>
-        </td></tr>
+            <input type="button" value="Restaurantes" onclick="window.location.href='https://fuzzy-engine-97j4r7xr65x2pp9-8080.app.github.dev/restaurante.html'">
+        </td></tr>        
     </table>
 
     <p style="font-weight:bold" id="paragrafoMensagem"></p>
 
     <table>
-        <tr> <th>Código do Entregador</th> <th>Nome</th> <th>Telefone</th> <th>Situação de Entrega</th> <th>Pontuação</th> </tr>
+        <tr> <th>Código</th> <th>Nome</th> <th>Telefone</th> <th>Entregado</th> <th>Pontuação</th> </tr>
         <tbody id="corpoTabelaEntregadores"> </tbody>
     </table>
 
@@ -47,7 +48,7 @@
         const txtCodEntregador = document.querySelector('#txtCodEntregador');
         const txtNome = document.querySelector('#txtNome');
         const txtTelefone = document.querySelector('#txtTelefone');
-        const txtSituacaoEntrega = document.querySelector('#txtSituacaoEntrega');
+        const chkSituacaoEntrega = document.querySelector('#chkSituacaoEntrega');
         const txtPontuacao = document.querySelector('#txtPontuacao');
 
         const btnNovo = document.querySelector('#btnNovo');
@@ -60,12 +61,12 @@
             txtCodEntregador.value = '';
             txtNome.value = '';
             txtTelefone.value = '';
-            txtSituacaoEntrega.value = '';
+            chkSituacaoEntrega.checked = false;
             txtPontuacao.value = '';
 
             txtNome.disabled = true;
             txtTelefone.disabled = true;
-            txtSituacaoEntrega.disabled = true;
+            chkSituacaoEntrega.disabled = true;
             txtPontuacao.disabled = true;
 
             btnNovo.disabled = false;
@@ -88,7 +89,7 @@
                 `<tr><td><a href="javascript:void(0)" onclick="selecionarEntregador('${e.cod_entregador}','${e.nome}','${e.telefone}','${e.situacaoEntrega}','${e.pontuacao}')">${e.cod_entregador}</a></td>` +
                 `<td>${e.nome}</td>` +
                 `<td>${e.telefone}</td>` +
-                `<td>${e.situacaoEntrega}</td>` +
+                `<td>${e.situacaoEntrega ? 'Sim' : 'Não'}</td>` +
                 `<td>${e.pontuacao}</td></tr>`
             ).join('');
         }
@@ -97,12 +98,12 @@
             txtCodEntregador.value = cod_entregador;
             txtNome.value = nome;
             txtTelefone.value = telefone;
-            txtSituacaoEntrega.value = situacaoEntrega;
+            chkSituacaoEntrega.checked = situacaoEntrega === 'true';
             txtPontuacao.value = pontuacao;
 
             txtNome.disabled = false;
             txtTelefone.disabled = false;
-            txtSituacaoEntrega.disabled = false;
+            chkSituacaoEntrega.disabled = false;
             txtPontuacao.disabled = false;
 
             btnNovo.disabled = true;
@@ -116,12 +117,12 @@
             txtCodEntregador.value = '';
             txtNome.value = '';
             txtTelefone.value = '';
-            txtSituacaoEntrega.value = '';
+            chkSituacaoEntrega.checked = false;
             txtPontuacao.value = '';
 
             txtNome.disabled = false;
             txtTelefone.disabled = false;
-            txtSituacaoEntrega.disabled = false;
+            chkSituacaoEntrega.disabled = false;
             txtPontuacao.disabled = false;
 
             btnNovo.disabled = true;
@@ -136,7 +137,7 @@
                 txtCodEntregador.value,
                 txtNome.value,
                 txtTelefone.value,
-                txtSituacaoEntrega.value,
+                chkSituacaoEntrega.checked,
                 txtPontuacao.value
             );
 

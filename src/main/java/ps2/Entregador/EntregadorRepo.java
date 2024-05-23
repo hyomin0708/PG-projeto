@@ -1,4 +1,4 @@
-package ps2.restapidb;
+package ps2.Entregador;
 
 import org.springframework.data.repository.CrudRepository;
 

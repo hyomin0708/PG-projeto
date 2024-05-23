@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escolher Entregador</title>
+    <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
+</head>
+
+<body>
+    <h1>Escolher Entregador</h1>
+
+    <h2>Restaurantes</h2>
+    <ul id="listaRestaurantes">
+        <!-- A lista de restaurantes será preenchida dinamicamente -->
+    </ul>
+
+    <hr>
+
+    <form id="escolherEntregadorForm">
+        <label for="selectEntregador">Selecione um entregador:</label>
+        <select id="selectEntregador" name="entregador">
+            <!-- Opções de entregadores serão preenchidas dinamicamente -->
+        </select>
+        <br>
+        <input type="submit" value="Escolher Entregador">
+    </form>
+
+    <p id="mensagem"></p>
+
+    <script>
+        // Função para preencher dinamicamente o menu suspenso com os entregadores
+        function preencherEntregadores() {
+            fetch('/api/entregadores')
+                .then(response => response.json())
+                .then(entregadores => {
+                    const selectEntregador = document.getElementById('selectEntregador');
+                    selectEntregador.innerHTML = ''; // Limpa as opções existentes
+
+                    entregadores.forEach(entregador => {
+                        const option = document.createElement('option');
+                        option.value = entregador.cod_entregador; // Corrigido para corresponder ao ID do entregador
+                        option.textContent = entregador.nome;
+                        selectEntregador.appendChild(option);
+                    });
+
+                    // Event listener para o envio do formulário
+                    document.getElementById('escolherEntregadorForm').addEventListener('submit', function (event) {
+                        event.preventDefault(); // Impede o envio padrão do formulário
+
+                        const selecionado = document.getElementById('selectEntregador').value;
+
+                        // Envie a escolha do entregador para o servidor
+                        fetch('/api/escolher-entregador', { // Corrigido para a rota correta
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ entregadorId: selecionado })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('mensagem').innerText = data.mensagem;
+                        })
+                        .catch(error => console.error('Erro ao escolher o entregador:', error));
+                    });
+                })
+                .catch(error => console.error('Erro ao obter a lista de entregadores:', error));
+        }
+
+        // Função para preencher dinamicamente a lista de restaurantes
+        function preencherRestaurantes() {
+            fetch('/api/restaurantes')
+                .then(response => response.json())
+                .then(restaurantes => {
+                    const listaRestaurantes = document.getElementById('listaRestaurantes');
+                    listaRestaurantes.innerHTML = ''; // Limpa os itens existentes
+
+                    restaurantes.forEach(restaurante => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${restaurante.nome} - ${restaurante.endereco}`;
+                        listaRestaurantes.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Erro ao obter a lista de restaurantes:', error));
+        }
+
+        // Preencher a lista de entregadores e restaurantes ao carregar a página
+        preencherEntregadores();
+        preencherRestaurantes();
+    </script>
+</body>
+
+</html>

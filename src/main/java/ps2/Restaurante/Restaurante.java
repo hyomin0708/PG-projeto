@@ -1,6 +1,9 @@
-package ps2.restapidb;
+package ps2.Restaurante;
 
 import javax.persistence.*;
+
+import ps2.Entregador.Entregador;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,24 +16,20 @@ public class Restaurante {
     private String nome;
     private String endereco;
     private String telefone;
-    private String tipoCozinha;
     private boolean deliveryDisponivel;
 
-    @ManyToMany
-    @JoinTable(name = "restaurante_entregador",
-            joinColumns = @JoinColumn(name = "restaurante_id"),
-            inverseJoinColumns = @JoinColumn(name = "entregador_id"))
-    private Set<Entregador> entregadores = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "entregador_id")
+    private Entregador entregador;
 
     public Restaurante() {
         // Construtor padrão vazio necessário para JPA
     }
 
-    public Restaurante(String nome, String endereco, String telefone, String tipoCozinha, boolean deliveryDisponivel) {
+    public Restaurante(String nome, String endereco, String telefone, boolean deliveryDisponivel) {
         this.nome = nome;
         this.endereco = endereco;
         this.telefone = telefone;
-        this.tipoCozinha = tipoCozinha;
         this.deliveryDisponivel = deliveryDisponivel;
     }
 
@@ -66,14 +65,6 @@ public class Restaurante {
         this.telefone = telefone;
     }
 
-    public String getTipoCozinha() {
-        return tipoCozinha;
-    }
-
-    public void setTipoCozinha(String tipoCozinha) {
-        this.tipoCozinha = tipoCozinha;
-    }
-
     public boolean isDeliveryDisponivel() {
         return deliveryDisponivel;
     }
@@ -82,22 +73,11 @@ public class Restaurante {
         this.deliveryDisponivel = deliveryDisponivel;
     }
 
-    public Set<Entregador> getEntregadores() {
-        return entregadores;
+    public Entregador getEntregador() {
+        return entregador;
     }
 
-    public void setEntregadores(Set<Entregador> entregadores) {
-        this.entregadores = entregadores;
+    public void setEntregador(Entregador entregador) {
+        this.entregador = entregador;
     }
-
-    public void addEntregador(Entregador entregador) {
-        this.entregadores.add(entregador);
-        entregador.getRestaurantes().add(this);
-    }
-
-    public void removeEntregador(Entregador entregador) {
-        this.entregadores.remove(entregador);
-        entregador.getRestaurantes().remove(this);
-    }
-
 }

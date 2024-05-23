@@ -1,4 +1,4 @@
-package ps2.restapidb;
+package ps2.Restaurante;
 
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
