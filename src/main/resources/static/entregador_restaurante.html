@@ -12,70 +12,47 @@
     <h1>Escolher Entregador</h1>
 
     <h2>Restaurantes</h2>
-    <ul id="listaRestaurantes">
-        <!-- A lista de restaurantes será preenchida dinamicamente -->
-    </ul>
+    <ul id="listaRestaurantes"></ul>
 
     <hr>
 
     <form id="escolherEntregadorForm">
         <label for="selectEntregador">Selecione um entregador:</label>
         <select id="selectEntregador" name="entregador">
-            <!-- Opções de entregadores serão preenchidas dinamicamente -->
         </select>
         <br>
         <input type="submit" value="Escolher Entregador">
     </form>
 
+    <h2>Detalhes do Entregador</h2>
     <p id="mensagem"></p>
+    <div id="detalhesEntregador">
+    </div>
 
     <script>
-        // Função para preencher dinamicamente o menu suspenso com os entregadores
         function preencherEntregadores() {
             fetch('/api/entregadores')
                 .then(response => response.json())
                 .then(entregadores => {
                     const selectEntregador = document.getElementById('selectEntregador');
-                    selectEntregador.innerHTML = ''; // Limpa as opções existentes
+                    selectEntregador.innerHTML = ''; 
 
                     entregadores.forEach(entregador => {
                         const option = document.createElement('option');
-                        option.value = entregador.cod_entregador; // Corrigido para corresponder ao ID do entregador
+                        option.value = entregador.cod_entregador;
                         option.textContent = entregador.nome;
                         selectEntregador.appendChild(option);
-                    });
-
-                    // Event listener para o envio do formulário
-                    document.getElementById('escolherEntregadorForm').addEventListener('submit', function (event) {
-                        event.preventDefault(); // Impede o envio padrão do formulário
-
-                        const selecionado = document.getElementById('selectEntregador').value;
-
-                        // Envie a escolha do entregador para o servidor
-                        fetch('/api/escolher-entregador', { // Corrigido para a rota correta
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ entregadorId: selecionado })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('mensagem').innerText = data.mensagem;
-                        })
-                        .catch(error => console.error('Erro ao escolher o entregador:', error));
                     });
                 })
                 .catch(error => console.error('Erro ao obter a lista de entregadores:', error));
         }
 
-        // Função para preencher dinamicamente a lista de restaurantes
         function preencherRestaurantes() {
             fetch('/api/restaurantes')
                 .then(response => response.json())
                 .then(restaurantes => {
                     const listaRestaurantes = document.getElementById('listaRestaurantes');
-                    listaRestaurantes.innerHTML = ''; // Limpa os itens existentes
+                    listaRestaurantes.innerHTML = '';
 
                     restaurantes.forEach(restaurante => {
                         const listItem = document.createElement('li');
@@ -86,7 +63,42 @@
                 .catch(error => console.error('Erro ao obter a lista de restaurantes:', error));
         }
 
-        // Preencher a lista de entregadores e restaurantes ao carregar a página
+        function obterDetalhesEntregador(entregadorId) {
+            fetch(`/api/entregadores/${entregadorId}`)
+                .then(response => response.json())
+                .then(entregador => {
+                    const detalhesEntregador = document.getElementById('detalhesEntregador');
+                    detalhesEntregador.innerHTML = `
+                        <p><strong>Nome:</strong> ${entregador.nome}</p>
+                        <p><strong>ID:</strong> ${entregador.cod_entregador}</p>
+                        <p><strong>Telefone:</strong> ${entregador.telefone}</p>
+                        <p><strong>Pontuação:</strong> ${entregador.pontuacao}</p>
+                        <p><strong>Situação da Entrega:</strong> ${entregador.situacaoEntrega ? 'Sim' : 'Não'}</p>
+                    `;
+                })
+                .catch(error => console.error('Erro ao obter os detalhes do entregador:', error));
+        }
+
+        document.getElementById('escolherEntregadorForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const selecionado = document.getElementById('selectEntregador').value;
+
+            fetch('/api/escolher-entregador', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ entregadorId: selecionado })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('mensagem').innerText = data.mensagem;
+                obterDetalhesEntregador(selecionado);
+            })
+            .catch(error => console.error('Erro ao escolher o entregador:', error));
+        });
+
         preencherEntregadores();
         preencherRestaurantes();
     </script>
