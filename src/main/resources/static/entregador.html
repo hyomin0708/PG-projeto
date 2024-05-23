@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Entregadores</title>
+    <title>Gerenciamento de Entregadores</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
 </head>
@@ -9,202 +10,170 @@
 <body>
     <h1>Gerenciamento de Entregadores</h1>
 
-    <table>    
-        <tr> <td>ID:</td> <td><input type="text" id="txtId" ></td> </tr>
-        <tr> <td>Nome:</td> <td><input type="text" id="txtNome"></td> </tr>
-        <tr> <td>Situação de entrega:</td> <td><input type="text" id="txtSituacao"></td> </tr>
-        <tr> <td>Pontuação:</td> <td><input type="text" id="txtPontuacao"></td> </tr>
-        <tr> <td>Telefone:</td> <td><input type="text" id="txtTelefone"></td> </tr>
+    <table>
+        <tr> <td>Código do Entregador:</td> <td><input type="text" id="txtCodEntregador" disabled></td> </tr>
+        <tr> <td>Nome:</td> <td><input type="text" id="txtNome" disabled></td> </tr>
+        <tr> <td>Telefone:</td> <td><input type="text" id="txtTelefone" disabled></td> </tr>
+        <tr> <td>Situação de Entrega:</td> <td><input type="text" id="txtSituacaoEntrega" disabled></td> </tr>
+        <tr> <td>Pontuação:</td> <td><input type="text" id="txtPontuacao" disabled></td> </tr>
         <tr><td></td><td>
             <input type="button" value="Novo" onclick="novoEntregador()" id="btnNovo">
-            <input type="button" value="Salvar" onclick="salvarEntregador()" id="btnSalvar">
-            <input type="button" value="Apagar" onclick="apagarEntregador()" id="btnApagar">
-            <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar">
+            <input type="button" value="Salvar" onclick="salvarEntregador()" id="btnSalvar" disabled>
+            <input type="button" value="Apagar" onclick="apagarEntregador()" id="btnApagar" disabled>
+            <input type="button" value="Cancelar" onclick="cancelarEdicao()" id="btnCancelar" disabled>
         </td></tr>
-    </table> 
+    </table>
 
     <p style="font-weight:bold" id="paragrafoMensagem"></p>
 
-    <table>    
-        <tr> <th>ID</th> <th>Nome</th> <th>Situação de entrega</th> <th>Pontuação</th> <th>Telefone</th> </tr>
+    <table>
+        <tr> <th>Código do Entregador</th> <th>Nome</th> <th>Telefone</th> <th>Situação de Entrega</th> <th>Pontuação</th> </tr>
         <tbody id="corpoTabelaEntregadores"> </tbody>
     </table>
 
     <script>
+        class Entregador {
+            constructor(cod_entregador, nome, telefone, situacaoEntrega, pontuacao) {
+                this.cod_entregador = cod_entregador;
+                this.nome = nome;
+                this.telefone = telefone;
+                this.situacaoEntrega = situacaoEntrega;
+                this.pontuacao = pontuacao;
+            }
+        }
+
         const corpoTabela = document.querySelector('#corpoTabelaEntregadores');
         const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
+        const txtCodEntregador = document.querySelector('#txtCodEntregador');
         const txtNome = document.querySelector('#txtNome');
-        const txtSituacao = document.querySelector('#txtSituacao');
-        const txtPontuacao = document.querySelector('#txtPontuacao');
         const txtTelefone = document.querySelector('#txtTelefone');
-        const txtId = document.querySelector('#txtId');
+        const txtSituacaoEntrega = document.querySelector('#txtSituacaoEntrega');
+        const txtPontuacao = document.querySelector('#txtPontuacao');
 
         const btnNovo = document.querySelector('#btnNovo');
         const btnSalvar = document.querySelector('#btnSalvar');
         const btnApagar = document.querySelector('#btnApagar');
         const btnCancelar = document.querySelector('#btnCancelar');
-        var criandoNovoEntregador = false;
-
-        inicializar();
 
         function inicializar() {
-            criandoNovoEntregador = false;
             paragrafoMensagem.innerHTML = 'Pressione o botão Novo ou selecione um entregador da lista:'
-            txtId.value = '';
+            txtCodEntregador.value = '';
             txtNome.value = '';
-            txtSituacao.value = '';
-            txtPontuacao.value = '';
             txtTelefone.value = '';
+            txtSituacaoEntrega.value = '';
+            txtPontuacao.value = '';
 
-            txtId.disabled = true;
             txtNome.disabled = true;
-            txtSituacao.disabled = true;
-            txtPontuacao.disabled = true;
             txtTelefone.disabled = true;
+            txtSituacaoEntrega.disabled = true;
+            txtPontuacao.disabled = true;
 
             btnNovo.disabled = false;
             btnSalvar.disabled = true;
             btnApagar.disabled = true;
             btnCancelar.disabled = true;
-            listarTodosEntregadores();            
+            listarTodosEntregadores();
         }
 
-        async function listarTodosEntregadores() {
+        function listarTodosEntregadores() {
             const URL = `/api/entregadores`;
             fetch(URL)
-              .then(resposta => { if (!resposta.ok) throw Error(resposta.status); return resposta;}) 
-              .then(resposta => resposta.json())
-              .then(jsonResponse => preencherTabela(jsonResponse))
-              .catch(function(error) { paragrafoMensagem.innerHTML = "Erro ao listar entregadores (código " + error.message + ")";});
+                .then(resposta => resposta.json())
+                .then(entregadores => preencherTabela(entregadores))
+                .catch(error => paragrafoMensagem.innerHTML = "Erro ao listar entregadores: " + error);
         }
 
         function preencherTabela(entregadores) {
-            var linhasTabela = '';
-            var n = entregadores.length;
-            for (var i = 0; i < n; i++) {
-                var e = entregadores[i];
-                linhasTabela += 
-                    `<tr><td><a href="javascript:void(0)" onclick="selecionarEntregador('${e.id}','${e.nome}','${e.situacao_entrega}','${e.pontuacao}','${e.telefone}')">` 
-                    + e.id     + '</a></td>' + 
-                    '<td>' + e.nome   + '</td>' +
-                    '<td>' + e.situacao_entrega + '</td>' +
-                    '<td>' + e.pontuacao + '</td>' +
-                    '<td>' + e.telefone + '</td></tr>\n';
-            }
-            corpoTabela.innerHTML = linhasTabela;
+            corpoTabela.innerHTML = entregadores.map(e =>
+                `<tr><td><a href="javascript:void(0)" onclick="selecionarEntregador('${e.cod_entregador}','${e.nome}','${e.telefone}','${e.situacaoEntrega}','${e.pontuacao}')">${e.cod_entregador}</a></td>` +
+                `<td>${e.nome}</td>` +
+                `<td>${e.telefone}</td>` +
+                `<td>${e.situacaoEntrega}</td>` +
+                `<td>${e.pontuacao}</td></tr>`
+            ).join('');
         }
 
-        function selecionarEntregador(id, nome, situacao, pontuacao, telefone) {
-            criandoNovoEntregador = false;
-            paragrafoMensagem.innerHTML = 'Altere e salve os dados do entregador, ou então apague o registro do entregador.'
-            txtId.value = id || '';
-            txtNome.value = nome || '';
-            txtSituacao.value = situacao || '';
-            txtPontuacao.value = pontuacao || '';
-            txtTelefone.value = telefone || '';
+        function selecionarEntregador(cod_entregador, nome, telefone, situacaoEntrega, pontuacao) {
+            txtCodEntregador.value = cod_entregador;
+            txtNome.value = nome;
+            txtTelefone.value = telefone;
+            txtSituacaoEntrega.value = situacaoEntrega;
+            txtPontuacao.value = pontuacao;
 
-            txtId.disabled = false;
             txtNome.disabled = false;
-            txtSituacao.disabled = false;
-            txtPontuacao.disabled = false;
             txtTelefone.disabled = false;
+            txtSituacaoEntrega.disabled = false;
+            txtPontuacao.disabled = false;
 
             btnNovo.disabled = true;
             btnSalvar.disabled = false;
             btnApagar.disabled = false;
-            btnCancelar.disabled = false;  
+            btnCancelar.disabled = false;
+            paragrafoMensagem.innerHTML = 'Altere e salve os dados do entregador, ou então apague o registro do entregador.';
         }
 
         function novoEntregador() {
-            paragrafoMensagem.innerHTML = 'Preencha os dados do novo entregador...';
-            criandoNovoEntregador = true;
-            
-            txtId.value = ''; // Definindo como string vazia, não undefined
+            txtCodEntregador.value = '';
             txtNome.value = '';
-            txtSituacao.value = '';
-            txtPontuacao.value = '';
             txtTelefone.value = '';
-            
-            txtId.disabled = false;
+            txtSituacaoEntrega.value = '';
+            txtPontuacao.value = '';
+
             txtNome.disabled = false;
-            txtSituacao.disabled = false;
-            txtPontuacao.disabled = false;
             txtTelefone.disabled = false;
-            
+            txtSituacaoEntrega.disabled = false;
+            txtPontuacao.disabled = false;
+
             btnNovo.disabled = true;
             btnSalvar.disabled = false;
             btnApagar.disabled = true;
             btnCancelar.disabled = false;
+            paragrafoMensagem.innerHTML = 'Preencha os dados do novo entregador...';
         }
-        
+
         function salvarEntregador() {
-            if (criandoNovoEntregador) {
-                criarEntregador();
-            }
-            else {
-                alterarEntregador();
-            }
+            const entregador = new Entregador(
+                txtCodEntregador.value,
+                txtNome.value,
+                txtTelefone.value,
+                txtSituacaoEntrega.value,
+                txtPontuacao.value
+            );
+
+            const URL = `/api/entregadores` + (entregador.cod_entregador ? `/${entregador.cod_entregador}` : '');
+            const method = entregador.cod_entregador ? 'PUT' : 'POST';
+
+            fetch(URL, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(entregador)
+            })
+            .then(resposta => {
+                if (!resposta.ok) throw new Error('Falha ao salvar o entregador: ' + resposta.statusText);
+                return resposta.json();
+            })
+            .then(() => inicializar())
+            .catch(error => paragrafoMensagem.innerHTML = error.message);
         }
-        
-        async function criarEntregador() {
-            const URL = `/api/entregadores`;
-            const dadosEntregador = {
-                'nome': txtNome.value,
-                'situacao_entrega': txtSituacao.value,
-                'pontuacao': txtPontuacao.value,
-                'telefone': txtTelefone.value
-            };
-            const postRequest = {
-                method: 'POST',
-                body: JSON.stringify(dadosEntregador),
-                headers: { 'Content-type': 'application/json' }
-            };
-            fetch(URL, postRequest)
-                .then(resposta => { if (!resposta.ok) throw Error(resposta.status); return resposta; } )
-                .then(resposta => resposta.json())
-                .then(jsonResponse => inicializar())
-                .catch(function(error) { paragrafoMensagem.innerHTML = 'Erro ao criar novo entregador (código ' + error.message + ')'; } );
+
+        function apagarEntregador() {
+            const URL = `/api/entregadores/${txtCodEntregador.value}`;
+            fetch(URL, {
+                method: 'DELETE'
+            })
+            .then(resposta => {
+                if (!resposta.ok) throw new Error('Falha ao apagar o entregador: ' + resposta.statusText);
+                inicializar();
+            })
+            .catch(error => paragrafoMensagem.innerHTML = error.message);
         }
-        
-        async function alterarEntregador() {
-            const ID = txtId.value;
-            const URL = `/api/entregadores/${ID}`;
-            const dadosEntregador = {
-                'id': ID,
-                'nome': txtNome.value,
-                'situacao_entrega': txtSituacao.value,
-                'pontuacao': txtPontuacao.value,
-                'telefone': txtTelefone.value
-            };
-            const putRequest = {
-                method: 'PUT',
-                body: JSON.stringify(dadosEntregador),
-                headers: { 'Content-type': 'application/json' }
-            };
-            fetch(URL, putRequest)
-                .then(resposta => { if (!resposta.ok) throw Error(resposta.status); return resposta; } )
-                .then(resposta => resposta.json())
-                .then(jsonResponse => inicializar())
-                .catch(function(error) { paragrafoMensagem.innerHTML = 'Erro ao alterar entregador (código ' + error.message + ')'; } );              
-        }
-        
+
         function cancelarEdicao() {
             inicializar();
         }
-        
-        async function apagarEntregador() {
-            const ID = txtId.value;
-            const URL = `/api/entregadores/${ID}`;
-            const deleteRequest = {
-                method: 'DELETE'
-            };
-            fetch(URL, deleteRequest)
-                .then(resposta => { if (!resposta.ok) throw Error(resposta.status); return resposta; } )
-                .then(resposta => inicializar())
-                .catch(function(error) { paragrafoMensagem.innerHTML = 'Erro ao apagar entregador (código ' + error.message + ')'; } );              
-        }
-        
-    </script>    
+
+        inicializar();
+    </script>
 </body>
 
 </html>
