@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h1>Escolher Entregador</h1>
+    <h1>Escolhe o Entregador</h1>
 
     <h2>Restaurantes</h2>
     <ul id="listaRestaurantes"></ul>
@@ -22,6 +22,10 @@
         </select>
         <br>
         <input type="submit" value="Escolher Entregador">
+        <p>
+        <input type="button" value="Voltar para Entregadores" onclick="window.location.href='https://fuzzy-engine-97j4r7xr65x2pp9-8080.app.github.dev/entregador.html'">
+        <input type="button" value="Voltar para Restaurantes" onclick="window.location.href='https://fuzzy-engine-97j4r7xr65x2pp9-8080.app.github.dev/restaurante.html'">
+        <input type="button" value="Voltar para Página Inicial" onclick="window.location.href='https://fuzzy-engine-97j4r7xr65x2pp9-8080.app.github.dev/index.html'">
     </form>
 
     <h2>Detalhes do Entregador</h2>
@@ -93,7 +97,6 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('mensagem').innerText = data.mensagem;
                 obterDetalhesEntregador(selecionado);
             })
             .catch(error => console.error('Erro ao escolher o entregador:', error));
