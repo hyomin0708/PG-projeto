@@ -1,11 +1,6 @@
-package ps2.Restaurante;
+package ps2.restapidb;
 
 import javax.persistence.*;
-
-import ps2.Entregador.Entregador;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 public class Restaurante {

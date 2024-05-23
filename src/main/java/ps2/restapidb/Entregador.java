@@ -1,9 +1,6 @@
-package ps2.Entregador;
+package ps2.restapidb;
 
 import javax.persistence.*;
-
-import ps2.Restaurante.Restaurante;
-
 import java.util.HashSet;
 import java.util.Set;
 

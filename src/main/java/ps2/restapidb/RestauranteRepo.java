@@ -1,4 +1,4 @@
-package ps2.Restaurante;
+package ps2.restapidb;
 
 import org.springframework.data.repository.CrudRepository;
 
