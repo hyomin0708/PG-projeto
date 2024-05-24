@@ -1,3 +1,8 @@
+/*
+ * Componente:
+ * Daniel Zou 10418211
+ * Danilo Ye 10417890
+*/
 package ps2.restapidb;
 
 import org.springframework.boot.SpringApplication;
